@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import Webcam from 'react-webcam';
 
 const BoundingBoxSelector = () => {
   const [mode, setMode] = useState('square'); // Modes: square, circle, waypoint
 
+  const webcamRef = useRef(null);
+
   const handleModeChange = (newMode) => {
     setMode(newMode);
+  };
+
+  const capture = () => {
+    const imageSrc = webcamRef.current.getScreenshot();
+    console.log(imageSrc); // This is where you would process the image for container detection
   };
 
   return (
@@ -15,6 +23,10 @@ const BoundingBoxSelector = () => {
         <button onClick={() => handleModeChange('circle')} className={`mr-2 ${mode === 'circle' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>Circle</button>
         <button onClick={() => handleModeChange('waypoint')} className={`mr-2 ${mode === 'waypoint' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>Waypoint</button>
       </div>
+      <div className="mt-4">
+        <button onClick={capture} className="bg-green-500 text-white p-2">Capture Image</button>
+      </div>
+      
       <div>
         {mode === 'square' && <p>Click and drag to create a square bounding box.</p>}
         {mode === 'circle' && <p>Click and drag to create a circular bounding box.</p>}
