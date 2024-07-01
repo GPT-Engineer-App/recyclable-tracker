@@ -23,6 +23,10 @@ const Index = () => {
           <li>Adjust settings as needed for better accuracy.</li>
         </ol>
       </div>
+      <div className="mt-8">
+        <h2 className="text-3xl font-bold mb-4">Detailed Instructions</h2>
+        <p className="text-lg">Placeholder for detailed instructions on how to use the application.</p>
+      </div>
     </div>
   );
 };

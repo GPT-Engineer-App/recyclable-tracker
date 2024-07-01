@@ -12,6 +12,21 @@ const Settings = () => {
     setSensitivity(e.target.value);
   };
 
+  // Placeholder for Click and Drag Square
+  const clickAndDragSquare = () => {
+    console.log("Click and Drag Square");
+  };
+
+  // Placeholder for Click and Drag Circle
+  const clickAndDragCircle = () => {
+    console.log("Click and Drag Circle");
+  };
+
+  // Placeholder for Waypoint Feature
+  const waypointFeature = () => {
+    console.log("Waypoint Feature");
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-4">Settings</h1>
@@ -32,6 +47,12 @@ const Settings = () => {
         <label className="block text-lg font-bold mb-2">Detection Sensitivity:</label>
         <input type="range" min="0" max="1" step="0.1" value={sensitivity} onChange={handleSensitivityChange} className="w-full" />
         <p className="text-lg mt-2">Current Sensitivity: {sensitivity}</p>
+      </div>
+
+      <div className="mt-4">
+        <button onClick={clickAndDragSquare} className="bg-blue-500 text-white p-2">Click and Drag Square</button>
+        <button onClick={clickAndDragCircle} className="bg-green-500 text-white p-2 ml-2">Click and Drag Circle</button>
+        <button onClick={waypointFeature} className="bg-red-500 text-white p-2 ml-2">Waypoint Feature</button>
       </div>
     </div>
   );

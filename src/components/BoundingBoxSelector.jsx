@@ -11,6 +11,40 @@ const BoundingBoxSelector = () => {
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
 
+  // Placeholder for capturing live video feed from the phone's camera
+  const captureLiveVideoFeed = () => {
+    console.log("Capturing live video feed from the phone's camera");
+  };
+
+  // Placeholder for preprocessing frames for object detection
+  const preprocessFrames = (frame) => {
+    console.log("Preprocessing frame for object detection");
+    return frame;
+  };
+
+  // Placeholder for YOLOv5 object detection
+  const detectObjectsYOLOv5 = (frame) => {
+    console.log("Detecting objects using YOLOv5");
+    return [];
+  };
+
+  // Placeholder for DeepSORT tracking
+  const trackObjectsDeepSORT = (detections) => {
+    console.log("Tracking objects using DeepSORT");
+    return detections;
+  };
+
+  // Placeholder for counting detected objects
+  const countDetectedObjects = (detections) => {
+    console.log("Counting detected objects");
+    return detections.length;
+  };
+
+  // Placeholder for displaying live video feed with bounding boxes and counts
+  const displayLiveFeedWithBoundingBoxes = (frame, detections) => {
+    console.log("Displaying live video feed with bounding boxes and counts");
+  };
+
   useEffect(() => {
     const loadModel = async () => {
       const model = await cocoSsd.load();
@@ -19,20 +53,17 @@ const BoundingBoxSelector = () => {
 
     loadModel().then((model) => {
       const interval = setInterval(() => {
-        detectObjects(model);
+        const videoFrame = webcamRef.current.video;
+        const preprocessedFrame = preprocessFrames(videoFrame);
+        const detections = detectObjectsYOLOv5(preprocessedFrame);
+        const trackedDetections = trackObjectsDeepSORT(detections);
+        setDetections(trackedDetections);
+        displayLiveFeedWithBoundingBoxes(videoFrame, trackedDetections);
       }, 1000);
 
       return () => clearInterval(interval);
     });
   }, []);
-
-  const detectObjects = async (model) => {
-    if (webcamRef.current && webcamRef.current.video.readyState === 4) {
-      const video = webcamRef.current.video;
-      const predictions = await model.detect(video);
-      setDetections(predictions);
-    }
-  };
 
   const handleModeChange = (newMode) => {
     setMode(newMode);
