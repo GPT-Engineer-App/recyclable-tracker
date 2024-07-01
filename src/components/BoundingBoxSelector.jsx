@@ -13,8 +13,12 @@ const BoundingBoxSelector = () => {
 
   useEffect(() => {
     const loadModel = async () => {
-      const model = await cocoSsd.load();
-      return model;
+      try {
+        const model = await cocoSsd.load();
+        return model;
+      } catch (error) {
+        console.error("Error loading model:", error);
+      }
     };
 
     loadModel().then((model) => {
@@ -29,8 +33,12 @@ const BoundingBoxSelector = () => {
   const detectObjects = async (model) => {
     if (webcamRef.current && webcamRef.current.video.readyState === 4) {
       const video = webcamRef.current.video;
-      const predictions = await model.detect(video);
-      setDetections(predictions);
+      try {
+        const predictions = await model.detect(video);
+        setDetections(predictions);
+      } catch (error) {
+        console.error("Error detecting objects:", error);
+      }
     }
   };
 

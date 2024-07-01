@@ -5,6 +5,7 @@ const Settings = () => {
   const [sensitivity, setSensitivity] = useState(0.5);
   const [yolov5Sensitivity, setYolov5Sensitivity] = useState(0.5); // Placeholder for YOLOv5 sensitivity
   const [deepSortTracking, setDeepSortTracking] = useState(false); // Placeholder for DeepSORT tracking
+  const [error, setError] = useState(null); // Placeholder for error handling
 
   const handleContainerTypeChange = (e) => {
     setContainerType(e.target.value);
@@ -61,8 +62,7 @@ const Settings = () => {
       {/* Error handling and logging for placeholders */}
       <div className="mb-4">
         <p className="text-red-500">
-          {/* Placeholder for error messages */}
-          {/* Example: {error && <span>Error: {error.message}</span>} */}
+          {error && <span>Error: {error.message}</span>}
         </p>
       </div>
     </div>

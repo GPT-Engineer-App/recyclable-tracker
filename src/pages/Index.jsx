@@ -26,7 +26,8 @@ const Index = () => {
 
       <div className="mt-8">
         <h2 className="text-3xl font-bold mb-4">Detailed Instructions</h2>
-        {/* Detailed instructions will be added here */}
+        {/* Placeholder for detailed instructions */}
+        {/* Actual detailed instructions should be added here */}
       </div>
     </div>
   );
