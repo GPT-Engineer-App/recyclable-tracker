@@ -7,7 +7,9 @@ const BoundingBoxSelector = () => {
   const [mode, setMode] = useState('square'); // Modes: square, circle, waypoint
   const [screenshot, setScreenshot] = useState(null);
   const [detections, setDetections] = useState([]);
+  const [boundingBoxes, setBoundingBoxes] = useState([]);
   const webcamRef = useRef(null);
+  const canvasRef = useRef(null);
 
   useEffect(() => {
     const loadModel = async () => {
@@ -57,6 +59,42 @@ const BoundingBoxSelector = () => {
     console.log("Bounding boxes transferred to the live stream");
   };
 
+  const handleCanvasClick = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    if (mode === 'square') {
+      setBoundingBoxes([...boundingBoxes, { x, y, width: 100, height: 100, type: 'square' }]);
+    } else if (mode === 'circle') {
+      setBoundingBoxes([...boundingBoxes, { x, y, radius: 50, type: 'circle' }]);
+    } else if (mode === 'waypoint') {
+      setBoundingBoxes([...boundingBoxes, { x, y, type: 'waypoint' }]);
+    }
+  };
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    boundingBoxes.forEach((box) => {
+      if (box.type === 'square') {
+        ctx.strokeStyle = 'red';
+        ctx.strokeRect(box.x, box.y, box.width, box.height);
+      } else if (box.type === 'circle') {
+        ctx.strokeStyle = 'blue';
+        ctx.beginPath();
+        ctx.arc(box.x, box.y, box.radius, 0, 2 * Math.PI);
+        ctx.stroke();
+      } else if (box.type === 'waypoint') {
+        ctx.fillStyle = 'green';
+        ctx.fillRect(box.x - 5, box.y - 5, 10, 10);
+      }
+    });
+  }, [boundingBoxes]);
+
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">Select Bounding Box Mode</h2>
@@ -94,6 +132,8 @@ const BoundingBoxSelector = () => {
         ))}
         <p>Total Objects Detected: {detections.length}</p>
       </div>
+
+      <canvas ref={canvasRef} width="640" height="480" onClick={handleCanvasClick} className="border mt-4"></canvas>
     </div>
   );
 };
