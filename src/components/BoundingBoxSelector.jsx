@@ -11,8 +11,12 @@ const BoundingBoxSelector = () => {
   };
 
   const capture = () => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    console.log(imageSrc); // This is where you would process the image for container detection
+    if (webcamRef.current) {
+      const imageSrc = webcamRef.current.getScreenshot();
+      console.log(imageSrc); // This is where you would process the image for container detection
+    } else {
+      console.error("Webcam is not available");
+    }
   };
 
   return (
