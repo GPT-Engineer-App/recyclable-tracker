@@ -2,8 +2,6 @@ import React from 'react';
 import BoundingBoxSelector from '../components/BoundingBoxSelector.jsx';
 import Webcam from 'react-webcam';
 
-import Webcam from 'react-webcam';
-
 const ObjectDetection = () => {
   return (
     <div className="container mx-auto p-4">
