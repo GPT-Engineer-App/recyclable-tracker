@@ -36,6 +36,18 @@ const BoundingBoxSelector = () => {
         {mode === 'circle' && <p>Click and drag to create a circular bounding box.</p>}
         {mode === 'waypoint' && <p>Click to create waypoints and form a custom bounding box.</p>}
       </div>
+      <Webcam
+        audio={false}
+        height={480}
+        ref={webcamRef}
+        screenshotFormat="image/jpeg"
+        width={640}
+        videoConstraints={{
+          width: 1280,
+          height: 720,
+          facingMode: "user"
+        }}
+      />
     </div>
   );
 };
