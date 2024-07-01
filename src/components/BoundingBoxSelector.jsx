@@ -3,6 +3,7 @@ import Webcam from 'react-webcam';
 
 const BoundingBoxSelector = () => {
   const [mode, setMode] = useState('square'); // Modes: square, circle, waypoint
+  const [screenshot, setScreenshot] = useState(null);
 
   const webcamRef = useRef(null);
 
@@ -12,7 +13,23 @@ const BoundingBoxSelector = () => {
 
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
+    setScreenshot(imageSrc);
     console.log(imageSrc); // This is where you would process the image for container detection
+  };
+
+  const handleBoundingBox = () => {
+    // Logic to add bounding boxes to the screenshot
+    console.log("Bounding boxes added to the screenshot");
+  };
+
+  const analyzeScreenshot = () => {
+    // Logic to analyze the screenshot
+    console.log("Screenshot analyzed");
+  };
+
+  const transferBoundingBoxes = () => {
+    // Logic to transfer bounding boxes to the live stream
+    console.log("Bounding boxes transferred to the live stream");
   };
 
   return (
@@ -25,6 +42,9 @@ const BoundingBoxSelector = () => {
       </div>
       <div className="mt-4">
         <button onClick={capture} className="bg-green-500 text-white p-2">Capture Image</button>
+        <button onClick={handleBoundingBox} className="bg-yellow-500 text-white p-2 ml-2">Add Bounding Boxes</button>
+        <button onClick={analyzeScreenshot} className="bg-red-500 text-white p-2 ml-2">Analyze Screenshot</button>
+        <button onClick={transferBoundingBoxes} className="bg-blue-500 text-white p-2 ml-2">Transfer Bounding Boxes</button>
       </div>
       
       <div>
@@ -32,6 +52,13 @@ const BoundingBoxSelector = () => {
         {mode === 'circle' && <p>Click and drag to create a circular bounding box.</p>}
         {mode === 'waypoint' && <p>Click to create waypoints and form a custom bounding box.</p>}
       </div>
+      
+      {screenshot && (
+        <div className="mt-4">
+          <h3 className="text-xl font-bold mb-2">Screenshot</h3>
+          <img src={screenshot} alt="Screenshot" />
+        </div>
+      )}
     </div>
   );
 };
