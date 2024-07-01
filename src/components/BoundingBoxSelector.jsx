@@ -4,7 +4,7 @@ import * as tf from '@tensorflow/tfjs';
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
 
 const BoundingBoxSelector = () => {
-  const [mode, setMode] = useState('square'); // Modes: square, circle, waypoint
+  const [mode, setMode] = useState('square');
   const [screenshot, setScreenshot] = useState(null);
   const [detections, setDetections] = useState([]);
   const [boundingBoxes, setBoundingBoxes] = useState([]);
@@ -41,7 +41,6 @@ const BoundingBoxSelector = () => {
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     setScreenshot(imageSrc);
-    console.log(imageSrc); // This is where you would process the image for container detection
   };
 
   const handleBoundingBox = () => {
@@ -77,8 +76,15 @@ const BoundingBoxSelector = () => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
 
+    // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Draw the webcam feed onto the canvas
+    if (webcamRef.current && webcamRef.current.video.readyState === 4) {
+      ctx.drawImage(webcamRef.current.video, 0, 0, canvas.width, canvas.height);
+    }
+
+    // Draw bounding boxes
     boundingBoxes.forEach((box) => {
       if (box.type === 'square') {
         ctx.strokeStyle = 'red';
@@ -90,50 +96,76 @@ const BoundingBoxSelector = () => {
         ctx.stroke();
       } else if (box.type === 'waypoint') {
         ctx.fillStyle = 'green';
-        ctx.fillRect(box.x - 5, box.y - 5, 10, 10);
+        ctx.fillRect(box.x - 5, y - 5, 10, 10);
       }
     });
-  }, [boundingBoxes]);
+
+    // Draw object detections
+    detections.forEach((detection) => {
+      const [x, y, width, height] = detection.bbox;
+      ctx.strokeStyle = 'yellow';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, width, height);
+      ctx.fillStyle = 'yellow';
+      ctx.font = '16px Arial';
+      ctx.fillText(`${detection.class} - ${Math.round(detection.score * 100)}%`, x, y > 10 ? y - 5 : 10);
+    });
+  }, [boundingBoxes, detections]);
 
   return (
     <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Select Bounding Box Mode</h2>
+      <h2 className="text-2xl font-bold mb-4">Bounding Box Selector</h2>
       <div className="mb-4">
-        <button onClick={() => handleModeChange('square')} className={`mr-2 ${mode === 'square' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>Square</button>
-        <button onClick={() => handleModeChange('circle')} className={`mr-2 ${mode === 'circle' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>Circle</button>
-        <button onClick={() => handleModeChange('waypoint')} className={`mr-2 ${mode === 'waypoint' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>Waypoint</button>
+        <button onClick={() => handleModeChange('square')} className={`mr-2 px-4 py-2 rounded ${mode === 'square' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>Square</button>
+        <button onClick={() => handleModeChange('circle')} className={`mr-2 px-4 py-2 rounded ${mode === 'circle' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>Circle</button>
+        <button onClick={() => handleModeChange('waypoint')} className={`mr-2 px-4 py-2 rounded ${mode === 'waypoint' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>Waypoint</button>
       </div>
       <div className="mt-4">
-        <button onClick={capture} className="bg-green-500 text-white p-2">Capture Image</button>
-        <button onClick={handleBoundingBox} className="bg-yellow-500 text-white p-2 ml-2">Add Bounding Boxes</button>
-        <button onClick={analyzeScreenshot} className="bg-red-500 text-white p-2 ml-2">Analyze Screenshot</button>
-        <button onClick={transferBoundingBoxes} className="bg-blue-500 text-white p-2 ml-2">Transfer Bounding Boxes</button>
+        <button onClick={capture} className="bg-green-500 text-white p-2 rounded mr-2">Capture Image</button>
+        <button onClick={handleBoundingBox} className="bg-yellow-500 text-white p-2 rounded mr-2">Add Bounding Boxes</button>
+        <button onClick={analyzeScreenshot} className="bg-red-500 text-white p-2 rounded mr-2">Analyze Screenshot</button>
+        <button onClick={transferBoundingBoxes} className="bg-blue-500 text-white p-2 rounded">Transfer Bounding Boxes</button>
       </div>
       
-      <div>
-        {mode === 'square' && <p>Click and drag to create a square bounding box.</p>}
-        {mode === 'circle' && <p>Click and drag to create a circular bounding box.</p>}
-        {mode === 'waypoint' && <p>Click to create waypoints and form a custom bounding box.</p>}
+      <div className="mt-4">
+        <p>Current mode: {mode === 'square' ? 'Square' : mode === 'circle' ? 'Circle' : 'Waypoint'}</p>
+        <p>{mode === 'square' || mode === 'circle' ? 'Click to create a bounding box.' : 'Click to create waypoints.'}</p>
       </div>
       
+      <div className="mt-4 relative">
+        <Webcam
+          ref={webcamRef}
+          audio={false}
+          width={640}
+          height={480}
+          screenshotFormat="image/jpeg"
+          videoConstraints={{
+            width: 640,
+            height: 480,
+            facingMode: "user"
+          }}
+          style={{ display: 'none' }}
+        />
+        <canvas 
+          ref={canvasRef} 
+          width={640} 
+          height={480} 
+          onClick={handleCanvasClick} 
+          className="border mt-4"
+        />
+      </div>
+
       {screenshot && (
         <div className="mt-4">
           <h3 className="text-xl font-bold mb-2">Screenshot</h3>
-          <img src={screenshot} alt="Screenshot" />
+          <img src={screenshot} alt="Screenshot" className="border" />
         </div>
       )}
 
       <div className="mt-4">
-        <h3 className="text-xl font-bold mb-2">Live Stream Detections</h3>
-        {detections.map((detection, index) => (
-          <div key={index} className="mb-2">
-            <p>{detection.class} - {Math.round(detection.score * 100)}%</p>
-          </div>
-        ))}
+        <h3 className="text-xl font-bold mb-2">Detections</h3>
         <p>Total Objects Detected: {detections.length}</p>
       </div>
-
-      <canvas ref={canvasRef} width="640" height="480" onClick={handleCanvasClick} className="border mt-4"></canvas>
     </div>
   );
 };
