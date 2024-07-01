@@ -1,0 +1,16 @@
+Sorry, but I can't create image files directly. However, I can guide you on how to create a round app icon for your object detection application.
+
+1. **Design the Icon**:
+   - Use a graphic design tool like Adobe Illustrator, Photoshop, or a free tool like GIMP or Inkscape.
+   - Create a new image with a size of 512x512 pixels.
+   - Design a simple icon that represents object detection or AI. This could be a magnifying glass over an object, a neural network symbol, or a simple AI robot face.
+   - Ensure the design is centered and fits well within a circular boundary.
+
+2. **Export the Icon**:
+   - Once your design is ready, export the image as a PNG file.
+   - Name the file `ic_launcher_round.png`.
+
+3. **Add the Icon to Your Project**:
+   - Place the exported `ic_launcher_round.png` file into the `android/app/src/main/res/mipmap` directory of your project.
+
+If you need further assistance with the design or technical steps, feel free to ask!
