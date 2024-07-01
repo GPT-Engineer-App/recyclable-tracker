@@ -45,11 +45,23 @@ const BoundingBoxSelector = () => {
   };
 
   const handleBoundingBox = () => {
+    // Placeholder for Frame Preprocessor
+    console.log("Frame Preprocessor placeholder");
+
+    // Placeholder for Object Detector (YOLOv5)
+    console.log("Object Detector (YOLOv5) placeholder");
+
+    // Placeholder for Object Tracker (DeepSORT)
+    console.log("Object Tracker (DeepSORT) placeholder");
+
     // Logic to add bounding boxes to the screenshot
     console.log("Bounding boxes added to the screenshot");
   };
 
   const analyzeScreenshot = () => {
+    // Placeholder for Counter
+    console.log("Counter placeholder");
+
     // Logic to analyze the screenshot
     console.log("Screenshot analyzed");
   };
@@ -134,6 +146,12 @@ const BoundingBoxSelector = () => {
       </div>
 
       <canvas ref={canvasRef} width="640" height="480" onClick={handleCanvasClick} className="border mt-4"></canvas>
+
+      {/* Placeholder for Display */}
+      <div className="mt-4">
+        <h3 className="text-xl font-bold mb-2">Display Placeholder</h3>
+        <p>This is where the display component will be implemented.</p>
+      </div>
     </div>
   );
 };
