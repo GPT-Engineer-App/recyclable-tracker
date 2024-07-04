@@ -4,7 +4,6 @@ import * as tf from '@tensorflow/tfjs';
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
 
 const BoundingBoxSelector = () => {
-  const [mode, setMode] = useState('square'); // Modes: square, circle, waypoint
   const [screenshot, setScreenshot] = useState(null);
   const [detections, setDetections] = useState([]);
   const [boundingBoxes, setBoundingBoxes] = useState([]);
@@ -34,10 +33,6 @@ const BoundingBoxSelector = () => {
     }
   };
 
-  const handleModeChange = (newMode) => {
-    setMode(newMode);
-  };
-
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     setScreenshot(imageSrc);
@@ -64,13 +59,7 @@ const BoundingBoxSelector = () => {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    if (mode === 'square') {
-      setBoundingBoxes([...boundingBoxes, { x, y, width: 100, height: 100, type: 'square' }]);
-    } else if (mode === 'circle') {
-      setBoundingBoxes([...boundingBoxes, { x, y, radius: 50, type: 'circle' }]);
-    } else if (mode === 'waypoint') {
-      setBoundingBoxes([...boundingBoxes, { x, y, type: 'waypoint' }]);
-    }
+    setBoundingBoxes([...boundingBoxes, { x, y, width: 100, height: 100, type: 'square' }]);
   };
 
   useEffect(() => {
@@ -83,37 +72,17 @@ const BoundingBoxSelector = () => {
       if (box.type === 'square') {
         ctx.strokeStyle = 'red';
         ctx.strokeRect(box.x, box.y, box.width, box.height);
-      } else if (box.type === 'circle') {
-        ctx.strokeStyle = 'blue';
-        ctx.beginPath();
-        ctx.arc(box.x, box.y, box.radius, 0, 2 * Math.PI);
-        ctx.stroke();
-      } else if (box.type === 'waypoint') {
-        ctx.fillStyle = 'green';
-        ctx.fillRect(box.x - 5, box.y - 5, 10, 10);
       }
     });
   }, [boundingBoxes]);
 
   return (
     <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Select Bounding Box Mode</h2>
-      <div className="mb-4">
-        <button onClick={() => handleModeChange('square')} className={`mr-2 ${mode === 'square' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>Square</button>
-        <button onClick={() => handleModeChange('circle')} className={`mr-2 ${mode === 'circle' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>Circle</button>
-        <button onClick={() => handleModeChange('waypoint')} className={`mr-2 ${mode === 'waypoint' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}>Waypoint</button>
-      </div>
       <div className="mt-4">
         <button onClick={capture} className="bg-green-500 text-white p-2">Capture Image</button>
         <button onClick={handleBoundingBox} className="bg-yellow-500 text-white p-2 ml-2">Add Bounding Boxes</button>
         <button onClick={analyzeScreenshot} className="bg-red-500 text-white p-2 ml-2">Analyze Screenshot</button>
         <button onClick={transferBoundingBoxes} className="bg-blue-500 text-white p-2 ml-2">Transfer Bounding Boxes</button>
-      </div>
-      
-      <div>
-        {mode === 'square' && <p>Click and drag to create a square bounding box.</p>}
-        {mode === 'circle' && <p>Click and drag to create a circular bounding box.</p>}
-        {mode === 'waypoint' && <p>Click to create waypoints and form a custom bounding box.</p>}
       </div>
       
       {screenshot && (
