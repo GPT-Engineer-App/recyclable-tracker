@@ -7,6 +7,28 @@ const TrainingMode = () => {
   const [detections, setDetections] = useState([]);
   const webcamRef = useRef(null);
   const canvasRef = useRef(null);
+  const [cameraSettings, setCameraSettings] = useState({
+    width: 1280,
+    height: 720,
+    frameRate: 30
+  });
+
+  useEffect(() => {
+    const assessDeviceHardware = () => {
+      const memory = navigator.deviceMemory || 4; // Default to 4GB if not available
+      const hardwareConcurrency = navigator.hardwareConcurrency || 4; // Default to 4 cores if not available
+
+      if (memory >= 8 && hardwareConcurrency >= 8) {
+        setCameraSettings({ width: 1920, height: 1080, frameRate: 60 });
+      } else if (memory >= 4 && hardwareConcurrency >= 4) {
+        setCameraSettings({ width: 1280, height: 720, frameRate: 30 });
+      } else {
+        setCameraSettings({ width: 640, height: 480, frameRate: 15 });
+      }
+    };
+
+    assessDeviceHardware();
+  }, []);
 
   useEffect(() => {
     const loadModel = async () => {
@@ -69,17 +91,19 @@ const TrainingMode = () => {
           audio={false}
           ref={webcamRef}
           screenshotFormat="image/jpeg"
-          width="100%"
+          width={cameraSettings.width}
+          height={cameraSettings.height}
           videoConstraints={{
-            width: 1280,
-            height: 720,
-            facingMode: 'environment'
+            width: cameraSettings.width,
+            height: cameraSettings.height,
+            facingMode: 'environment',
+            frameRate: cameraSettings.frameRate
           }}
         />
         <canvas
           ref={canvasRef}
-          width="1280"
-          height="720"
+          width={cameraSettings.width}
+          height={cameraSettings.height}
           style={{ position: 'absolute', top: 0, left: 0 }}
         />
       </div>
