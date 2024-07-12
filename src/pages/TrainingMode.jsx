@@ -12,6 +12,9 @@ const TrainingMode = () => {
     height: 720,
     frameRate: 30
   });
+  const [trainingData, setTrainingData] = useState([]);
+  const [trainingProgress, setTrainingProgress] = useState(0);
+  const [isTraining, setIsTraining] = useState(false);
 
   useEffect(() => {
     const assessDeviceHardware = () => {
@@ -95,6 +98,34 @@ const TrainingMode = () => {
     console.log('Saved data:', data);
   };
 
+  const handleFileUpload = (event) => {
+    const files = event.target.files;
+    const fileArray = Array.from(files);
+    setTrainingData(fileArray);
+  };
+
+  const processVideoFiles = async () => {
+    // Process video files and extract frames for training
+    // This is a placeholder function and should be implemented
+    console.log('Processing video files:', trainingData);
+  };
+
+  const trainModel = async () => {
+    setIsTraining(true);
+    setTrainingProgress(0);
+
+    await processVideoFiles();
+
+    // Placeholder for training logic
+    for (let i = 0; i <= 100; i++) {
+      setTrainingProgress(i);
+      await new Promise(resolve => setTimeout(resolve, 100)); // Simulate training time
+    }
+
+    setIsTraining(false);
+    console.log('Training complete');
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-4">Training Mode</h1>
@@ -121,6 +152,12 @@ const TrainingMode = () => {
         />
       </div>
       <button onClick={saveData} className="mt-4 p-2 bg-blue-500 text-white rounded">Save Data</button>
+      <div className="mt-8">
+        <h2 className="text-3xl font-bold mb-4">Upload Training Data</h2>
+        <input type="file" multiple onChange={handleFileUpload} className="mb-4" />
+        <button onClick={trainModel} className="p-2 bg-green-500 text-white rounded" disabled={isTraining}>Start Training</button>
+        {isTraining && <p className="mt-4">Training Progress: {trainingProgress}%</p>}
+      </div>
     </div>
   );
 };
