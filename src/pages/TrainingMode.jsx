@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import * as tf from '@tensorflow/tfjs';
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
+import { Button, Input, Progress } from '@/components/ui';
+import JSZip from 'jszip';
 
 const TrainingMode = () => {
   const [detections, setDetections] = useState([]);
@@ -15,6 +17,7 @@ const TrainingMode = () => {
   const [trainingData, setTrainingData] = useState([]);
   const [trainingProgress, setTrainingProgress] = useState(0);
   const [isTraining, setIsTraining] = useState(false);
+  const [datasetSummary, setDatasetSummary] = useState(null);
 
   useEffect(() => {
     const assessDeviceHardware = () => {
@@ -98,10 +101,34 @@ const TrainingMode = () => {
     console.log('Saved data:', data);
   };
 
-  const handleFileUpload = (event) => {
-    const files = event.target.files;
-    const fileArray = Array.from(files);
-    setTrainingData(fileArray);
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const zip = new JSZip();
+      const zipContent = await zip.loadAsync(file);
+      const annotations = [];
+      const metadata = [];
+      const images = [];
+
+      for (const [relativePath, zipEntry] of Object.entries(zipContent.files)) {
+        if (zipEntry.dir) continue;
+
+        const fileContent = await zipEntry.async('blob');
+        if (relativePath.startsWith('annotations/') && relativePath.endsWith('.json')) {
+          annotations.push(relativePath);
+        } else if (relativePath.startsWith('metadata/') && relativePath.endsWith('.json')) {
+          metadata.push(relativePath);
+        } else if (relativePath.startsWith('images/') && relativePath.endsWith('.jpg')) {
+          images.push(relativePath);
+        }
+      }
+
+      setDatasetSummary({
+        annotations: annotations.length,
+        metadata: metadata.length,
+        images: images.length
+      });
+    }
   };
 
   const processVideoFiles = async () => {
@@ -151,12 +178,19 @@ const TrainingMode = () => {
           style={{ position: 'absolute', top: 0, left: 0 }}
         />
       </div>
-      <button onClick={saveData} className="mt-4 p-2 bg-blue-500 text-white rounded">Save Data</button>
+      <Button onClick={saveData} className="mt-4 p-2 bg-blue-500 text-white rounded">Save Data</Button>
       <div className="mt-8">
         <h2 className="text-3xl font-bold mb-4">Upload Training Data</h2>
-        <input type="file" multiple onChange={handleFileUpload} className="mb-4" />
-        <button onClick={trainModel} className="p-2 bg-green-500 text-white rounded" disabled={isTraining}>Start Training</button>
-        {isTraining && <p className="mt-4">Training Progress: {trainingProgress}%</p>}
+        <Input type="file" onChange={handleFileUpload} className="mb-4" />
+        {datasetSummary && (
+          <div className="mb-4">
+            <p>Annotations: {datasetSummary.annotations}</p>
+            <p>Metadata: {datasetSummary.metadata}</p>
+            <p>Images: {datasetSummary.images}</p>
+          </div>
+        )}
+        <Button onClick={trainModel} className="p-2 bg-green-500 text-white rounded" disabled={isTraining}>Start Training</Button>
+        {isTraining && <Progress value={trainingProgress} className="mt-4" />}
       </div>
     </div>
   );
