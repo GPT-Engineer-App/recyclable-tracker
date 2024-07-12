@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import * as tf from '@tensorflow/tfjs';
 import * as cocoSsd from '@tensorflow-models/coco-ssd';
+import { Button, Input, Progress } from '@/components/ui';
 
 const TrainingMode = () => {
   const [detections, setDetections] = useState([]);
@@ -151,12 +152,12 @@ const TrainingMode = () => {
           style={{ position: 'absolute', top: 0, left: 0 }}
         />
       </div>
-      <button onClick={saveData} className="mt-4 p-2 bg-blue-500 text-white rounded">Save Data</button>
+      <Button onClick={saveData} className="mt-4 p-2 bg-blue-500 text-white rounded">Save Data</Button>
       <div className="mt-8">
         <h2 className="text-3xl font-bold mb-4">Upload Training Data</h2>
-        <input type="file" multiple onChange={handleFileUpload} className="mb-4" />
-        <button onClick={trainModel} className="p-2 bg-green-500 text-white rounded" disabled={isTraining}>Start Training</button>
-        {isTraining && <p className="mt-4">Training Progress: {trainingProgress}%</p>}
+        <Input type="file" multiple onChange={handleFileUpload} className="mb-4" />
+        <Button onClick={trainModel} className="p-2 bg-green-500 text-white rounded" disabled={isTraining}>Start Training</Button>
+        {isTraining && <Progress value={trainingProgress} className="mt-4" />}
       </div>
     </div>
   );
