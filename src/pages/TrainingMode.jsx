@@ -51,6 +51,7 @@ const TrainingMode = () => {
       const predictions = await model.detect(video);
       setDetections(predictions);
       drawBoundingBoxes(predictions);
+      persistDetections(predictions);
     }
   };
 
@@ -70,6 +71,18 @@ const TrainingMode = () => {
         prediction.bbox[1] > 10 ? prediction.bbox[1] - 5 : 10
       );
     });
+  };
+
+  const persistDetections = (predictions) => {
+    const storedDetections = JSON.parse(localStorage.getItem('detections')) || {};
+    predictions.forEach(prediction => {
+      if (storedDetections[prediction.class]) {
+        storedDetections[prediction.class] += 1;
+      } else {
+        storedDetections[prediction.class] = 1;
+      }
+    });
+    localStorage.setItem('detections', JSON.stringify(storedDetections));
   };
 
   const saveData = () => {
